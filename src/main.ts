@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle("Panda Market API")
-    .setDescription("Panda Market API 문서")
+    .setTitle("Yuumi Market API")
+    .setDescription("Yuumi Market API 문서")
     .setVersion("1.0")
     .addTag("auth")
     .addTag("users")
