@@ -1,0 +1,49 @@
+// prisma/schema.prisma
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas  = ["public", "auth"]
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  profile    Profile?
+  products   Product[]
+
+  @@schema("auth")
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  name      String?
+  bio       String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("public")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  price       Float
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@schema("public")
+}
