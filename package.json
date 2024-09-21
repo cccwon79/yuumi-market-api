@@ -1,7 +1,7 @@
 {
-  "name": "panda-market-api",
+  "name": "yuumi-market-api",
   "version": "1.0.0",
-  "description": "Panda Market API repository",
+  "description": "yuumi Market API repository",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -85,16 +85,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/cccwon79/panda-market-api.git"
+    "url": "git+ssh://git@github.com/cccwon79/yuumi-market-api.git"
   },
   "keywords": [
-    "panda-market",
-    "panda-market-api"
+    "yuumi-market",
+    "yuumi-market-api"
   ],
   "author": "Won Kim",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cccwon79/panda-market-api/issues"
+    "url": "https://github.com/cccwon79/yuumi-market-api/issues"
   },
-  "homepage": "https://github.com/cccwon79/panda-market-api#readme"
+  "homepage": "https://github.com/cccwon79/yuumi-market-api#readme"
 }
