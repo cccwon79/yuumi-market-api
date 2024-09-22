@@ -1,15 +1,25 @@
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import * as dotenv from "dotenv";
 import { AppModule } from "./app.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { Reflector } from "@nestjs/core";
+import * as dotenv from "dotenv";
+import { resolve } from "path";
+
+// .env 파일의 절대 경로를 지정합니다.
+const envPath = resolve(__dirname, "..", ".env");
+console.log("Loading .env file from:", envPath);
+
+const result = dotenv.config({ path: envPath });
+if (result.error) {
+  console.error("Error loading .env file:", result.error);
+} else {
+  console.log(".env file loaded successfully");
+}
+
+console.log("SUPABASE_KEY:", process.env.SUPABASE_KEY);
 
 async function bootstrap() {
-  dotenv.config();
-  console.log("애플리케이션 시작");
-  console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-  console.log("SUPABASE_KEY:", process.env.SUPABASE_KEY);
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
