@@ -3,6 +3,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { config } from "dotenv";
 import { AppModule } from "./app.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
+import { Reflector } from "@nestjs/core";
 
 config();
 
@@ -23,9 +24,10 @@ async function bootstrap() {
   SwaggerModule.setup("docs", app, document);
 
   app.enableCors();
-  app.useGlobalGuards(new JwtAuthGuard());
+  const reflector = app.get(Reflector);
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
-  await app.listen(3000, "0.0.0.0");
+  await app.listen(3000);
 }
 
 bootstrap();
