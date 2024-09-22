@@ -1,26 +1,36 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, Logger } from "@nestjs/common";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import * as dotenv from "dotenv";
+import { resolve } from "path";
 
 @Injectable()
 export class SupabaseService {
   private supabase: SupabaseClient;
+  private readonly logger = new Logger(SupabaseService.name);
 
-  constructor(private configService: ConfigService) {
-    const supabaseUrl = this.configService.get<string>("SUPABASE_URL");
-    const supabaseAnonKey = this.configService.get<string>("SUPABASE_ANON_KEY");
+  constructor() {
+    // .env 파일 로드
+    const envPath = resolve(__dirname, "../../../.env");
+    const result = dotenv.config({ path: envPath });
 
-    console.log("SUPABASE_URL: ", supabaseUrl);
-    console.log("SUPABASE_KEY: ", supabaseAnonKey);
+    if (result.error) {
+      this.logger.error(`Error loading .env file: ${result.error.message}`);
+      throw new Error("환경 변수 로딩 실패");
+    }
 
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY;
+
+    this.logger.log(`SUPABASE_URL: ${supabaseUrl}`);
+    this.logger.log(
+      `SUPABASE_KEY: ${supabaseKey ? "설정됨" : "설정되지 않음"}`,
+    );
+
+    if (!supabaseUrl || !supabaseKey) {
       throw new Error("Supabase 환경 변수가 설정되지 않았습니다.");
     }
 
-    this.supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_KEY,
-    );
+    this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
   getClient(): SupabaseClient {
