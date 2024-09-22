@@ -5,9 +5,11 @@ import { AppModule } from "./app.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { Reflector } from "@nestjs/core";
 
-dotenv.config();
-
 async function bootstrap() {
+  dotenv.config();
+  console.log("애플리케이션 시작");
+  console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
+  console.log("SUPABASE_KEY:", process.env.SUPABASE_KEY);
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
