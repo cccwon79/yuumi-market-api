@@ -88,27 +88,71 @@ http://localhost:3000/docs
 1. GitHub에 코드를 푸시합니다.
 2. GitHub Webhook이 `/home/ubuntu/webhook/webhook.js` 웹훅 서버로 이벤트를 전송합니다.
 
-```
+```webhook.js
 const express = require('express');
 const bodyParser = require('body-parser');
+const crypto = require('crypto');
 const { exec } = require('child_process');
 
+// dotenv 패키지 로드
+require('dotenv').config();
+
 const app = express();
-app.use(bodyParser.json());
+
+// SECRET은 환경 변수에서 가져옵니다.
+const SECRET = process.env.WEBHOOK_SECRET;
+
+// raw body를 가져오기 위한 설정
+app.use(bodyParser.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf;
+    }
+}));
 
 // Webhook 엔드포인트
 app.post('/webhook', (req, res) => {
-    // Webhook 요청을 받으면 즉시 응답을 보냅니다.
-    res.status(200).send('Received!');
+    const signature = req.headers['x-hub-signature-256'];
 
-    // 비동기로 deploy.sh 실행
-    exec('sh /home/ubuntu/yuumi-market-api/deploy.sh', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
-    });
+    if (!signature) {
+        console.error('No X-Hub-Signature-256 found on request');
+        return res.status(400).send('No X-Hub-Signature-256 found on request');
+    }
+
+    const hmac = crypto.createHmac('sha256', SECRET);
+    hmac.update(req.rawBody);
+    const digest = `sha256=${hmac.digest('hex')}`;
+
+    // 타이밍 공격을 방지하기 위한 안전한 비교
+    const isValid = crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+
+    if (!isValid) {
+        console.error('Invalid signature');
+        return res.status(400).send('Invalid signature');
+    }
+
+    // GitHub 이벤트 헤더와 페이로드 가져오기
+    const event = req.headers['x-github-event'];
+    const payload = req.body;
+
+    // 기본 브랜치 확인 (필요에 따라 변경)
+    const DEFAULT_BRANCH = 'main'; // 또는 실제 기본 브랜치 이름으로 변경
+
+    if (payload.ref === `refs/heads/${DEFAULT_BRANCH}`) {
+        // Webhook 요청을 받으면 즉시 응답을 보냅니다.
+        res.status(200).send('Received and processing!');
+
+        // 비동기로 deploy.sh 실행
+        exec('sh /home/ubuntu/yuumi-market-api/deploy.sh', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+        });
+    } else {
+        console.log(`Received a ${event} event for a non-default branch: ${payload.ref}`);
+        res.status(200).send('Ignored non-default branch');
+    }
 });
 
 app.listen(3001, () => {
@@ -119,17 +163,14 @@ app.listen(3001, () => {
 
 3. 웹훅 서버가 `/home/ubuntu/yuumi-market-api/deploy.sh` 스크립트를 실행합니다.
 
-```
+```deploy.sh
 #!/bin/bash
-
-# 배포할 브랜치 설정
-branch=${refs/heads/main}
 
 # 경로 이동 (프로젝트 디렉토리로 이동)
 cd /home/ubuntu/yuumi-market-api
 
 # GitHub에서 main 브랜치의 최신 코드 가져오기
-git --git-dir=/home/ubuntu/yuumi-market-api/.git pull origin ${branch}
+git pull origin main
 
 # 의존성 설치 (필요한 경우)
 npm install
