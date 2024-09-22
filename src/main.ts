@@ -20,9 +20,6 @@ if (result.error) {
   logger.log(".env file loaded successfully");
 }
 
-logger.log("SUPABASE_KEY:", process.env.SUPABASE_KEY);
-logger.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-
 if (
   !process.env.SUPABASE_KEY ||
   !process.env.SUPABASE_URL ||
