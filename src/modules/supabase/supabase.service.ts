@@ -1,13 +1,17 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 @Injectable()
 export class SupabaseService {
   private supabase: SupabaseClient;
 
-  constructor() {
-    console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-    console.log("SUPABASE_KEY:", process.env.SUPABASE_KEY);
+  constructor(private configService: ConfigService) {
+    const supabaseUrl = this.configService.get<string>("SUPABASE_URL");
+    const supabaseAnonKey = this.configService.get<string>("SUPABASE_ANON_KEY");
+
+    console.log("SUPABASE_URL:", supabaseUrl);
+    console.log("SUPABASE_KEY:", supabaseAnonKey);
 
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
       throw new Error("Supabase 환경 변수가 설정되지 않았습니다.");

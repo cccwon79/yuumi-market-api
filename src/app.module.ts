@@ -5,9 +5,19 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
 import { ProductsModule } from "./modules/products/products.module";
 import { SupabaseModule } from "./modules/supabase/supabase.module";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, SupabaseModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ".env",
+    }),
+    AuthModule,
+    UsersModule,
+    ProductsModule,
+    SupabaseModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
