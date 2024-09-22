@@ -1,11 +1,11 @@
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { config } from "dotenv";
+import * as dotenv from "dotenv";
 import { AppModule } from "./app.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { Reflector } from "@nestjs/core";
 
-config();
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
