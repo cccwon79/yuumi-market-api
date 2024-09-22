@@ -6,6 +6,13 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
+    console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
+    console.log("SUPABASE_KEY:", process.env.SUPABASE_KEY);
+
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+      throw new Error("Supabase 환경 변수가 설정되지 않았습니다.");
+    }
+
     this.supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_KEY,
