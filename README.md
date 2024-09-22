@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="path/to/logo.png" alt="Yummi Market API 로고" width="200" height="200">
+  <img src="public/images/supa-nest-prisma.png" alt="Yuumi Market API 로고" width="200" height="200">
 </p>
 
 <h1 align="center">Yuumi Market API</h1>
