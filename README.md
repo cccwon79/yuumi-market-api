@@ -158,10 +158,26 @@ app.post('/webhook', (req, res) => {
 app.listen(3001, () => {
     console.log('Webhook server is listening on port 3001');
 });
-
 ```
 
-3. 웹훅 서버가 `/home/ubuntu/yuumi-market-api/deploy.sh` 스크립트를 실행합니다.
+3. PM2 사용 시 환경 변수 설정
+```
+module.exports = {
+  apps: [
+    {
+      name: 'yuumi-market-api',
+      script: 'dist/main.js',
+      env: {
+        NODE_ENV: 'production',
+      },
+    },
+  ],
+};
+```
+```
+pm2 start ecosystem.config.js
+```
+4. 웹훅 서버가 `/home/ubuntu/yuumi-market-api/deploy.sh` 스크립트를 실행합니다.
 
 ```deploy.sh
 #!/bin/bash
